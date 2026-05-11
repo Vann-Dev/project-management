@@ -11,6 +11,8 @@ use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
+    use ApiAccess;
+
     public function index(Request $request): JsonResponse
     {
         $projects = Project::query()
@@ -93,12 +95,4 @@ class ProjectController extends Controller
         return response()->json(null, 204);
     }
 
-    private function authorizeProjectAccess(Request $request, Project $project): void
-    {
-        abort_unless(
-            $project->owner_id === $request->user()->id
-            || $project->users()->where('users.id', $request->user()->id)->exists(),
-            403
-        );
-    }
 }
