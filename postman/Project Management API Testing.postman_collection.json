@@ -1,0 +1,378 @@
+{
+  "info": {
+    "_postman_id": "8d4f8d8c-7a2f-4dbf-b72c-project-management-api-testing",
+    "name": "Project Management API Testing",
+    "description": "Postman collection for API Testing and API Integration Testing. Set base_url and token variables before running. All protected endpoints use Bearer token authentication via Laravel Sanctum.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "PASTE_SANCTUM_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "project_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "ticket_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "epic_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "sprint_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "comment_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "hour_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "project_status_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "ticket_status_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "ticket_type_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "ticket_priority_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "activity_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.add({ key: 'Accept', value: 'application/json' });"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth and Users",
+      "item": [
+        {
+          "name": "GET Current User - /api/user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Response has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });",
+                  "pm.test('Response has email', function () { pm.expect(pm.response.json()).to.have.property('email'); });",
+                  "pm.test('Password is not exposed', function () { pm.expect(pm.response.text()).to.not.include('password'); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Users List - /api/users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('Paginated data exists', function () { pm.expect(pm.response.json()).to.have.property('data'); });",
+                  "pm.test('Links exist', function () { pm.expect(pm.response.json()).to.have.property('links'); });",
+                  "pm.test('Meta exists', function () { pm.expect(pm.response.json()).to.have.property('meta'); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. References",
+      "item": [
+        {
+          "name": "GET Project Statuses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/references/project-statuses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "references", "project-statuses"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Response is array', function () { pm.expect(pm.response.json()).to.be.an('array'); });", "pm.test('Response body exists', function () { pm.expect(pm.response.text()).to.not.equal(''); });", "pm.test('Content type JSON', function () { pm.response.to.have.header('Content-Type'); });"]}}]
+        },
+        {
+          "name": "GET Ticket Statuses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/references/ticket-statuses",
+              "host": ["{{base_url}}"],
+              "path": ["api", "references", "ticket-statuses"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Response is array', function () { pm.expect(pm.response.json()).to.be.an('array'); });", "pm.test('Response time below 1000ms', function () { pm.expect(pm.response.responseTime).to.be.below(1000); });", "pm.test('No server error', function () { pm.expect(pm.response.code).to.be.below(500); });"]}}]
+        },
+        {
+          "name": "GET Ticket Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/references/ticket-types",
+              "host": ["{{base_url}}"],
+              "path": ["api", "references", "ticket-types"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Response is array', function () { pm.expect(pm.response.json()).to.be.an('array'); });", "pm.test('Response body exists', function () { pm.expect(pm.response.text()).to.not.equal(''); });", "pm.test('No unauthorized error', function () { pm.expect(pm.response.code).to.not.equal(401); });"]}}]
+        },
+        {
+          "name": "GET Ticket Priorities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/references/ticket-priorities",
+              "host": ["{{base_url}}"],
+              "path": ["api", "references", "ticket-priorities"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Response is array', function () { pm.expect(pm.response.json()).to.be.an('array'); });", "pm.test('Response body exists', function () { pm.expect(pm.response.text()).to.not.equal(''); });", "pm.test('No forbidden error', function () { pm.expect(pm.response.code).to.not.equal(403); });"]}}]
+        },
+        {
+          "name": "GET Activities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/references/activities",
+              "host": ["{{base_url}}"],
+              "path": ["api", "references", "activities"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Response is array', function () { pm.expect(pm.response.json()).to.be.an('array'); });", "pm.test('Response body exists', function () { pm.expect(pm.response.text()).to.not.equal(''); });", "pm.test('No server error', function () { pm.expect(pm.response.code).to.be.below(500); });"]}}]
+        }
+      ]
+    },
+    {
+      "name": "3. Projects API Testing",
+      "item": [
+        {
+          "name": "GET Projects List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/projects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Paginated data exists', function () { pm.expect(pm.response.json()).to.have.property('data'); });", "pm.test('Meta exists', function () { pm.expect(pm.response.json()).to.have.property('meta'); });", "pm.test('No password leaked', function () { pm.expect(pm.response.text()).to.not.include('password'); });"]}}]
+        },
+        {
+          "name": "POST Create Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman API Project\",\n  \"description\": \"Created from Postman API Testing\",\n  \"status_id\": {{project_status_id}},\n  \"ticket_prefix\": \"PMT\",\n  \"status_type\": \"default\",\n  \"type\": \"kanban\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/projects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('Project has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });",
+                  "pm.test('Project name is correct', function () { pm.expect(pm.response.json().name).to.eql('Postman API Project'); });",
+                  "pm.test('Project prefix is correct', function () { pm.expect(pm.response.json().ticket_prefix).to.eql('PMT'); });",
+                  "if (pm.response.code === 201) { pm.collectionVariables.set('project_id', pm.response.json().id); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Project Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/projects/{{project_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "projects", "{{project_id}}"]
+            }
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Project id matches variable', function () { pm.expect(String(pm.response.json().id)).to.eql(String(pm.collectionVariables.get('project_id'))); });", "pm.test('Owner relation exists', function () { pm.expect(pm.response.json()).to.have.property('owner'); });", "pm.test('Tickets relation exists', function () { pm.expect(pm.response.json()).to.have.property('tickets'); });"]}}]
+        },
+        {
+          "name": "PUT Update Project",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"name\": \"Updated Postman API Project\",\n  \"type\": \"scrum\"\n}"},
+            "url": {"raw": "{{base_url}}/api/projects/{{project_id}}", "host": ["{{base_url}}"], "path": ["api", "projects", "{{project_id}}"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Project name updated', function () { pm.expect(pm.response.json().name).to.eql('Updated Postman API Project'); });", "pm.test('Project type updated', function () { pm.expect(pm.response.json().type).to.eql('scrum'); });", "pm.test('Project id exists', function () { pm.expect(pm.response.json()).to.have.property('id'); });"]}}]
+        }
+      ]
+    },
+    {
+      "name": "4. Tickets API Testing",
+      "item": [
+        {
+          "name": "GET Tickets List",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {"raw": "{{base_url}}/api/tickets", "host": ["{{base_url}}"], "path": ["api", "tickets"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Paginated data exists', function () { pm.expect(pm.response.json()).to.have.property('data'); });", "pm.test('Links exist', function () { pm.expect(pm.response.json()).to.have.property('links'); });", "pm.test('Meta exists', function () { pm.expect(pm.response.json()).to.have.property('meta'); });"]}}]
+        },
+        {
+          "name": "POST Create Ticket",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"project_id\": {{project_id}},\n  \"name\": \"Postman API Ticket\",\n  \"content\": \"Created from Postman API Testing\",\n  \"status_id\": {{ticket_status_id}},\n  \"type_id\": {{ticket_type_id}},\n  \"priority_id\": {{ticket_priority_id}},\n  \"estimation\": 4\n}"},
+            "url": {"raw": "{{base_url}}/api/tickets", "host": ["{{base_url}}"], "path": ["api", "tickets"]}
+          },
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 201', function () { pm.response.to.have.status(201); });", "pm.test('Ticket has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });", "pm.test('Ticket name is correct', function () { pm.expect(pm.response.json().name).to.eql('Postman API Ticket'); });", "pm.test('Ticket project id exists', function () { pm.expect(pm.response.json()).to.have.property('project_id'); });", "if (pm.response.code === 201) { pm.collectionVariables.set('ticket_id', pm.response.json().id); }"]}}]
+        },
+        {
+          "name": "GET Ticket Detail",
+          "request": {"method": "GET", "header": [], "url": {"raw": "{{base_url}}/api/tickets/{{ticket_id}}", "host": ["{{base_url}}"], "path": ["api", "tickets", "{{ticket_id}}"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Ticket id matches variable', function () { pm.expect(String(pm.response.json().id)).to.eql(String(pm.collectionVariables.get('ticket_id'))); });", "pm.test('Project relation exists', function () { pm.expect(pm.response.json()).to.have.property('project'); });", "pm.test('Status relation exists', function () { pm.expect(pm.response.json()).to.have.property('status'); });"]}}]
+        },
+        {
+          "name": "PUT Update Ticket",
+          "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Updated Postman API Ticket\",\n  \"content\": \"Updated content from Postman\"\n}"}, "url": {"raw": "{{base_url}}/api/tickets/{{ticket_id}}", "host": ["{{base_url}}"], "path": ["api", "tickets", "{{ticket_id}}"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });", "pm.test('Ticket name updated', function () { pm.expect(pm.response.json().name).to.eql('Updated Postman API Ticket'); });", "pm.test('Ticket content updated', function () { pm.expect(pm.response.json().content).to.eql('Updated content from Postman'); });", "pm.test('Ticket id exists', function () { pm.expect(pm.response.json()).to.have.property('id'); });"]}}]
+        }
+      ]
+    },
+    {
+      "name": "5. API Integration Testing Scenarios",
+      "item": [
+        {
+          "name": "POST Create Epic For Project",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Postman API Epic\",\n  \"starts_at\": \"2025-01-01\",\n  \"ends_at\": \"2025-02-01\"\n}"}, "url": {"raw": "{{base_url}}/api/projects/{{project_id}}/epics", "host": ["{{base_url}}"], "path": ["api", "projects", "{{project_id}}", "epics"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 201', function () { pm.response.to.have.status(201); });", "pm.test('Epic has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });", "pm.test('Epic project id exists', function () { pm.expect(pm.response.json()).to.have.property('project_id'); });", "pm.test('Epic name is correct', function () { pm.expect(pm.response.json().name).to.eql('Postman API Epic'); });", "if (pm.response.code === 201) { pm.collectionVariables.set('epic_id', pm.response.json().id); }"]}}]
+        },
+        {
+          "name": "POST Create Sprint For Project",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Postman API Sprint\",\n  \"description\": \"Sprint from Postman API Integration Testing\",\n  \"starts_at\": \"2025-03-01\",\n  \"ends_at\": \"2025-03-14\"\n}"}, "url": {"raw": "{{base_url}}/api/projects/{{project_id}}/sprints", "host": ["{{base_url}}"], "path": ["api", "projects", "{{project_id}}", "sprints"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 201', function () { pm.response.to.have.status(201); });", "pm.test('Sprint has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });", "pm.test('Sprint project id exists', function () { pm.expect(pm.response.json()).to.have.property('project_id'); });", "pm.test('Sprint name is correct', function () { pm.expect(pm.response.json().name).to.eql('Postman API Sprint'); });", "if (pm.response.code === 201) { pm.collectionVariables.set('sprint_id', pm.response.json().id); }"]}}]
+        },
+        {
+          "name": "POST Create Comment For Ticket",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"content\": \"Postman API Integration comment\"\n}"}, "url": {"raw": "{{base_url}}/api/tickets/{{ticket_id}}/comments", "host": ["{{base_url}}"], "path": ["api", "tickets", "{{ticket_id}}", "comments"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 201', function () { pm.response.to.have.status(201); });", "pm.test('Comment has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });", "pm.test('Comment ticket id exists', function () { pm.expect(pm.response.json()).to.have.property('ticket_id'); });", "pm.test('Comment content is correct', function () { pm.expect(pm.response.json().content).to.eql('Postman API Integration comment'); });", "if (pm.response.code === 201) { pm.collectionVariables.set('comment_id', pm.response.json().id); }"]}}]
+        },
+        {
+          "name": "POST Create Logged Hour For Ticket",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"value\": 2.5,\n  \"comment\": \"Postman API Integration logged hour\",\n  \"activity_id\": {{activity_id}}\n}"}, "url": {"raw": "{{base_url}}/api/tickets/{{ticket_id}}/hours", "host": ["{{base_url}}"], "path": ["api", "tickets", "{{ticket_id}}", "hours"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 201', function () { pm.response.to.have.status(201); });", "pm.test('Hour has id', function () { pm.expect(pm.response.json()).to.have.property('id'); });", "pm.test('Hour ticket id exists', function () { pm.expect(pm.response.json()).to.have.property('ticket_id'); });", "pm.test('Hour value is correct', function () { pm.expect(Number(pm.response.json().value)).to.eql(2.5); });", "if (pm.response.code === 201) { pm.collectionVariables.set('hour_id', pm.response.json().id); }"]}}]
+        }
+      ]
+    },
+    {
+      "name": "6. Negative and Security API Cases",
+      "item": [
+        {
+          "name": "POST Invalid Project Without Name",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"ticket_prefix\": \"BAD\"\n}"}, "url": {"raw": "{{base_url}}/api/projects", "host": ["{{base_url}}"], "path": ["api", "projects"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 422', function () { pm.response.to.have.status(422); });", "pm.test('Validation errors exist', function () { pm.expect(pm.response.json()).to.have.property('errors'); });", "pm.test('Name validation error exists', function () { pm.expect(pm.response.json().errors).to.have.property('name'); });", "pm.test('Request is not successful', function () { pm.expect(pm.response.code).to.not.be.oneOf([200, 201]); });"]}}]
+        },
+        {
+          "name": "GET Invalid Project ID",
+          "request": {"method": "GET", "header": [], "url": {"raw": "{{base_url}}/api/projects/999999", "host": ["{{base_url}}"], "path": ["api", "projects", "999999"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 404', function () { pm.response.to.have.status(404); });", "pm.test('Response is not successful', function () { pm.expect(pm.response.code).to.not.equal(200); });", "pm.test('No project data returned', function () { pm.expect(pm.response.text()).to.not.include('ticket_prefix'); });", "pm.test('No server error', function () { pm.expect(pm.response.code).to.be.below(500); });"]}}]
+        },
+        {
+          "name": "GET Invalid Ticket ID",
+          "request": {"method": "GET", "header": [], "url": {"raw": "{{base_url}}/api/tickets/999999", "host": ["{{base_url}}"], "path": ["api", "tickets", "999999"]}},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Status code is 404', function () { pm.response.to.have.status(404); });", "pm.test('Response is not successful', function () { pm.expect(pm.response.code).to.not.equal(200); });", "pm.test('No ticket data returned', function () { pm.expect(pm.response.text()).to.not.include('estimation'); });", "pm.test('No server error', function () { pm.expect(pm.response.code).to.be.below(500); });"]}}]
+        }
+      ]
+    }
+  ]
+}
