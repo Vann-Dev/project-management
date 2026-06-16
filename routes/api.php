@@ -22,6 +22,27 @@ use App\Http\Controllers\Api\UserController;
 |
 */
 
+// Login endpoint untuk generate Sanctum token
+Route::post('/login', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    $user = \App\Models\User::where('email', $request->email)->first();
+
+    if (!$user || !\Hash::check($request->password, $user->password)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    $token = $user->createToken('api-token')->plainTextToken;
+
+    return response()->json([
+        'user' => $user,
+        'token' => $token,
+    ]);
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
